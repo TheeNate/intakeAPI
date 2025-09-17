@@ -17,9 +17,13 @@ app.post('/api/email-handler', (req, res) => {
   res.status(200).json({ message: 'Webhook received successfully' });
 });
 
-// Basic health check endpoint
+// Health check endpoint - responds immediately for deployment health checks
 app.get('/', (req, res) => {
-  res.json({ message: 'Mailgun Webhook Server is running' });
+  res.status(200).json({ 
+    status: 'healthy',
+    message: 'Mailgun Webhook Server is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
