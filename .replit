@@ -31,9 +31,6 @@ waitForPort = 5000
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 44257
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "cloudrun"
+run = ["sh", "-c", "sh -c 'node index.js'"]
