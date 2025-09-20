@@ -1,13 +1,12 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const PORT = 5000;
+Make intake-api a Universal Email Webhook Adapter:
+Transform this webhook receiver to handle any email service format (Mailgun, SendGrid, etc.) and normalize the data into a standard JSON format.
+Current Problem: Different email services send webhook data with different field names, causing errors when we try to forward the data.
+Solution: Create a smart mapper that tries multiple possible field names and always outputs a consistent format.
+Implementation:
 
-// Middleware to parse JSON and URL-encoded bodies
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+Replace the current /api/email-handler endpoint with this enhanced version:
 
-// Universal email data extractor
+javascript// Universal email data extractor
 function extractEmailData(body) {
   // Try multiple possible field names for subject
   const subject = body.subject || body.Subject || body['Subject'] || '';
@@ -32,7 +31,6 @@ function extractEmailData(body) {
   };
 }
 
-// Universal Email Webhook Adapter
 app.post('/api/email-handler', (req, res) => {
   console.log('=== Raw Webhook Received ===');
   console.log('Available fields:', Object.keys(req.body));
@@ -75,17 +73,4 @@ app.post('/api/email-handler', (req, res) => {
     }
   });
 });
-
-// Health check endpoint - responds immediately for deployment health checks
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy',
-    message: 'Universal Email Webhook Adapter is running',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Webhook server listening on http://0.0.0.0:${PORT}`);
-  console.log(`Universal email webhook endpoint: POST /api/email-handler`);
-});
+This creates a universal adapter that can handle any email webhook format and always outputs clean, consistent data for downstream processing.
